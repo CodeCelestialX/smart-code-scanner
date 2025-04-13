@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Code Scanner</title>
+  <style>
+    body {
+      background-color: #0f0f2f;
+      color: #00ffff;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 2rem;
+    }
+    textarea {
+      width: 90%;
+      height: 200px;
+      background: #1a1a3d;
+      color: #00ffff;
+      border: 2px solid #00ffff;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 10px;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.7rem 1.5rem;
+      background-color: #00ffff;
+      color: #0f0f2f;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 1.5rem;
+      background-color: #1a1a3d;
+      padding: 1rem;
+      border-radius: 10px;
+      border: 2px solid #00ffff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Smart Code Scanner</h1>
+  <p>Paste your code below and select its language:</p>
+  <select id="language">
+    <option value="javascript">JavaScript</option>
+    <option value="python">Python</option>
+    <option value="html">HTML</option>
+    <option value="c">C</option>
+    <option value="cpp">C++</option>
+  </select>
+  <br><br>
+  <textarea id="codeInput" placeholder="Paste your code here..."></textarea>
+  <br>
+  <button onclick="scanCode()">Scan Code</button>
+  <div class="result" id="resultBox">Result will appear here.</div>
+
+  <script>
+    function scanCode() {
+      const code = document.getElementById("codeInput").value.toLowerCase();
+      const lang = document.getElementById("language").value;
+      const resultBox = document.getElementById("resultBox");
+      let warnings = [];
+
+      if (code.includes("eval(") && lang === "javascript") {
+        warnings.push("Dangerous use of eval() — can run harmful code.");
+      }
+      if (code.includes("exec(") && lang === "python") {
+        warnings.push("Use of exec() — this can execute arbitrary code.");
+      }
+      if (code.includes("system(") && (lang === "python" || lang === "c" || lang === "cpp")) {
+        warnings.push("Use of system() — can execute system commands!");
+      }
+      if (code.includes("<script>") && lang === "html") {
+        warnings.push("Potential XSS risk — <script> tags can be dangerous.");
+      }
+
+      if (warnings.length === 0) {
+        resultBox.innerHTML = "No dangerous code detected!";
+      } else {
+        resultBox.innerHTML = "<strong>Warning(s):</strong><br>" + warnings.join("<br>");
+      }
+    }
+  </script>
+</body>
+</html>
